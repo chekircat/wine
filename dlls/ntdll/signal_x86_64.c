@@ -381,15 +381,11 @@ __ASM_GLOBAL_FUNC( exception_handler_call_wrapper,
  */
 static DWORD call_handler( EXCEPTION_RECORD *rec, CONTEXT *context, DISPATCHER_CONTEXT *dispatch )
 {
-    EXCEPTION_REGISTRATION_RECORD frame;
     DWORD res;
-
-    frame.Handler = nested_exception_handler;
-    __wine_push_frame( &frame );
 
     TRACE_(seh)( "calling handler %p (rec=%p, frame=%p context=%p, dispatch=%p)\n",
                  dispatch->LanguageHandler, rec, (void *)dispatch->EstablisherFrame, dispatch->ContextRecord, dispatch );
-    res = dispatch->exception_handler_call_wrapper( rec, (void *)dispatch->EstablisherFrame, context, dispatch );
+    res =  exception_handler_call_wrapper( rec, (void *)dispatch->EstablisherFrame, context, dispatch );
     TRACE_(seh)( "handler at %p returned %lu\n", dispatch->LanguageHandler, res );
 
     rec->ExceptionFlags &= EH_NONCONTINUABLE;
